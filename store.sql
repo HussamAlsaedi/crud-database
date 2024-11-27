@@ -1,53 +1,51 @@
-create database store;
 
-use store;
+CREATE DATABASE store;
 
-create table countries(
-    code int primary key ,
-    name varchar(20) unique ,
-    constraint_name varchar(20) not null
 
-);
+USE store;
 
-create table users (
-    id int(10) not null primary key ,
-    full_name varchar(20) ,
-    email varchar(20) unique ,
-    gander char(1) check ( gander between 'm' and  'f') ,
-    data_of_birth varchar(15)  ,
-    created_at datetime default (current_timestamp),
-    country_code int,
 
-    foreign key (country_code) references  countries (code)
+CREATE TABLE countries (
+    code INT PRIMARY KEY,
+    name VARCHAR(20) UNIQUE NOT NULL
 );
 
 
-
-create table orders (
-    id int primary key ,
-    user_ID int ,
-    status varchar(6) check ( status = 'start' or 'finish' ) ,
-    created_at datetime default (current_timestamp),
-    foreign key (user_ID) references  users (id)
+CREATE TABLE users (
+    id INT NOT NULL PRIMARY KEY,
+    full_name VARCHAR(20) NOT NULL,
+    email VARCHAR(20) UNIQUE NOT NULL,
+    gender CHAR(1) CHECK (gender IN ('m', 'f')),
+    date_of_birth DATE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    country_code INT,
+    FOREIGN KEY (country_code) REFERENCES countries(code)
 );
 
 
-create table products (
-    id int primary key ,
-    name varchar(10) not null ,
-    price int  default  0,
-    status varchar(10) check ( status = 'valid' or 'expired' ),
-    created_at datetime default (current_timestamp)
+CREATE TABLE orders (
+    id INT PRIMARY KEY,
+    user_id INT NOT NULL,
+    status VARCHAR(6) CHECK (status IN ('start', 'finish')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-create table order_products (
-   order_id int  primary key ,
-    product_id int,
-    quantity int default 0,
 
-    foreign key (order_id) references orders (id),
-    foreign key (product_id) references products(id)
-)
+CREATE TABLE products (
+    id INT PRIMARY KEY,
+    name VARCHAR(10) NOT NULL,
+    price INT DEFAULT 0 CHECK (price >= 0),
+    status VARCHAR(10) CHECK (status IN ('valid', 'expired')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 
 
-
+CREATE TABLE order_products (
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT DEFAULT 0 CHECK (quantity >= 0),
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id),
+    PRIMARY KEY (order_id, product_id)
+);
